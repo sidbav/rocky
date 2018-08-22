@@ -16,7 +16,6 @@ module.exports = (app) => {
     //setting up bot (sidbav_bot)
     const botAuthorizations = {}
     
-    
     const clients = {};
 
     function getClientByTeamId(teamId) {
@@ -39,7 +38,6 @@ module.exports = (app) => {
         done(null, {});
     }));
 
-
     app.use(passport.initialize());
 
     app.get('/', (req, res) => {
@@ -53,10 +51,10 @@ module.exports = (app) => {
     app.get('/auth/slack/callback',
         passport.authenticate('slack', { session: false }), (req, res) => {   
             res.send('<p>sidbav_bot was successfully installed on your team.</p>');
-    },
-    (err, req, res, next) => {
+        },
+        (err, req, res, next) => {
         res.status(500).send(`<p>sidbav_bot failed to install</p> <pre>${err}</pre>`);
-    }
+        }
     );  
 
     //express middleware stuff

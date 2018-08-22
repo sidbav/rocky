@@ -1,5 +1,4 @@
 const logger = require('morgan'); 
-
 const express = require('express'); 
 const app = express(); 
 const PORT = process.env.PORT || 4000;
@@ -10,8 +9,7 @@ app.use(logger('dev'));
 //slack file
 require('./slack/slack')(app); 
 
-
-//const server = http.createServer(app); 
+//start the server
 app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);
 });
