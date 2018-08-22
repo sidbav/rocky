@@ -1,0 +1,3 @@
+# sidbav-slackbot
+
+A slackbot!
