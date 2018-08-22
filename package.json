@@ -13,10 +13,13 @@
     "@aoberoi/passport-slack": "^1.0.5",
     "@slack/client": "^4.4.0",
     "@slack/events-api": "^2.1.0",
-    "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "morgan": "^1.9.0",
     "passport": "^0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sidbav/sidbav-slackbot"
   }
 }
