@@ -31,12 +31,14 @@ module.exports = (app) => {
     passport.use(new SlackStrategy({
         clientID: process.env.SLACK_CLIENT_ID,
         clientSecret: process.env.SLACK_CLIENT_SECRET,
-        skipUserProfile: true,
+        skipUserProfile: false, //trying to see what happens if we change this
     },
         (accessToken, scopes, team, extra, profiles, done) => {
         botAuthorizations[team.id] = extra.bot.accessToken;
         done(null, {});
     }));
+
+    //all of the express functions 
 
     app.use(passport.initialize());
 
@@ -63,14 +65,12 @@ module.exports = (app) => {
     // *** Greeting any user that says "hi" ***
     slackEvents.on('message', (message, body) => {
 
-    if (!message.subtype && message.text.indexOf('hi') >= 0) {
+    if (!message.subtype && (message.text.indexOf('hi') >= 0 || message.text.indexOf('hello')) >= 0) {
 
         const slack = getClientByTeamId(body.team_id);
-
         if (!slack) {
             return console.error('No authorization found for this team. Did you install this app again after restarting?');
         }
-
         slack.chat.postMessage({ channel: message.channel, text: `Hello <@${message.user}>! :tada:` })
             .catch(console.error);
     }
