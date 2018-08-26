@@ -1,15 +1,28 @@
 module.exports = (app) => {
     
+    'use strict'; 
+
     //loading all of the environment variables from .env file
     require('dotenv').config(); 
     
     const slackEventsApi = require('@slack/events-api'),
         SlackClient = require('@slack/client').WebClient,
         passport = require('passport'),
-        SlackStrategy = require('@aoberoi/passport-slack').default.Strategy; //used when authentacting with passport
+        SlackStrategy = require('@aoberoi/passport-slack').default.Strategy, //used when authentacting with passport
+        nlp = require('./witClient'); 
 
+    //all of the tokens with error checking
+    const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET
+    if (!SLACK_SIGNING_SECRET)
+        throw new Error('missing SLACK_SIGNING_SECRET'); 
+    const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID
+    if (!SLACK_CLIENT_ID)
+        throw new Error('missing SLACK_CLIENT_ID'); 
+    const SLACK_CLIENT_SECRET=  process.env.SLACK_CLIENT_SECRET
+    if (!SLACK_CLIENT_SECRET)
+        throw new Error('missing SLACK_CLIENT_SECRET');     
     //connecting to slack app
-    const slackEvents = slackEventsApi.createEventAdapter(process.env.SLACK_SIGNING_SECRET, {
+    const slackEvents = slackEventsApi.createEventAdapter(SLACK_SIGNING_SECRET, {
         includeBody: true
     });
     
@@ -29,9 +42,9 @@ module.exports = (app) => {
     }
 
     passport.use(new SlackStrategy({
-        clientID: process.env.SLACK_CLIENT_ID,
-        clientSecret: process.env.SLACK_CLIENT_SECRET,
-        skipUserProfile: false, //trying to see what happens if we change this
+        clientID: SLACK_CLIENT_ID,
+        clientSecret: SLACK_CLIENT_SECRET,
+        skipUserProfile: false,
     },
         (accessToken, scopes, team, extra, profiles, done) => {
         botAuthorizations[team.id] = extra.bot.accessToken;

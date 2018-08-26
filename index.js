@@ -1,3 +1,4 @@
+'use strict'; 
 const logger = require('morgan'); 
 const express = require('express'); 
 const app = express(); 
@@ -10,6 +11,9 @@ app.use(logger('dev'));
 
 //slack file
 require('./src/slackClient')(app); 
+
+//wit 
+require('./src/witClient')(app); 
 
 //start the server
 app.listen(PORT, () => {
