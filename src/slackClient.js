@@ -44,7 +44,7 @@ module.exports = (app) => {
     passport.use(new SlackStrategy({
         clientID: SLACK_CLIENT_ID,
         clientSecret: SLACK_CLIENT_SECRET,
-        skipUserProfile: false,
+        skipUserProfile: true, //dont change this
     },
         (accessToken, scopes, team, extra, profiles, done) => {
         botAuthorizations[team.id] = extra.bot.accessToken;
@@ -78,6 +78,8 @@ module.exports = (app) => {
     // *** Greeting any user that says "hi" ***
     slackEvents.on('message', (message, body) => {
 
+    require('./witClient')(message);
+     
     if (!message.subtype && (message.text.indexOf('hi') >= 0 || message.text.indexOf('hello')) >= 0) {
 
         const slack = getClientByTeamId(body.team_id);

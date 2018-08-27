@@ -1,3 +1,3 @@
-module.exports = (app) => { 
-    const witClient = require('node-wit'); 
+module.exports = (message) => { 
+    console.log(`ask: ${message.text}`);  
 }
