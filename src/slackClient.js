@@ -12,23 +12,25 @@ module.exports = (app) => {
         nlp = require('./witClient'); 
 
     //all of the tokens with error checking
-    const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET
+    const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET; 
+
     if (!SLACK_SIGNING_SECRET)
         throw new Error('missing SLACK_SIGNING_SECRET'); 
-    const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID
+    const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID; 
+
     if (!SLACK_CLIENT_ID)
         throw new Error('missing SLACK_CLIENT_ID'); 
-    const SLACK_CLIENT_SECRET=  process.env.SLACK_CLIENT_SECRET
+
+    const SLACK_CLIENT_SECRET=  process.env.SLACK_CLIENT_SECRET; 
     if (!SLACK_CLIENT_SECRET)
-        throw new Error('missing SLACK_CLIENT_SECRET');     
+        throw new Error('missing SLACK_CLIENT_SECRET');    
+
     //connecting to slack app
     const slackEvents = slackEventsApi.createEventAdapter(SLACK_SIGNING_SECRET, {
         includeBody: true
     });
-    
-    //setting up bot (sidbav_bot)
-    const botAuthorizations = {}
-    
+
+    const botAuthorizations = {}    
     const clients = {};
 
     function getClientByTeamId(teamId) {
@@ -44,7 +46,7 @@ module.exports = (app) => {
     passport.use(new SlackStrategy({
         clientID: SLACK_CLIENT_ID,
         clientSecret: SLACK_CLIENT_SECRET,
-        skipUserProfile: true, //dont change this
+        skipUserProfile: true,
     },
         (accessToken, scopes, team, extra, profiles, done) => {
         botAuthorizations[team.id] = extra.bot.accessToken;
@@ -52,7 +54,6 @@ module.exports = (app) => {
     }));
 
     //all of the express functions 
-
     app.use(passport.initialize());
 
     app.get('/', (req, res) => {
@@ -75,20 +76,36 @@ module.exports = (app) => {
     //express middleware stuff
     app.use('/slack/events', slackEvents.expressMiddleware());
 
-    // *** Greeting any user that says "hi" ***
+
+    //what happens when any message is sent
     slackEvents.on('message', (message, body) => {
+    
+        console.log(message.text); 
 
-    require('./witClient')(message);
-     
-    if (!message.subtype && (message.text.indexOf('hi') >= 0 || message.text.indexOf('hello')) >= 0) {
+        nlp(message.text, (err, res) => { 
+            if (err) { 
+                console.log(err); 
+                return; 
+            }
 
-        const slack = getClientByTeamId(body.team_id);
-        if (!slack) {
-            return console.error('No authorization found for this team. Did you install this app again after restarting?');
-        }
-        slack.chat.postMessage({ channel: message.channel, text: `Hello <@${message.user}>! :tada:` })
-            .catch(console.error);
-    }
+            if (!message.subtype) {
+                const slack = getClientByTeamId(body.team_id);
+                if (!slack) {
+                    return console.error('No authorization found for this team. Did you install this app again after restarting?');
+                }
+
+                if (!res.intent) { 
+                    slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand.` })
+                        .catch(console.error);
+                } else if (res.intent[0].value == 'time' && res.location) { 
+                    slack.chat.postMessage({ channel: message.channel, text: `Sorry, I do not know the time yet!` })
+                        .catch(console.error);
+                } else { 
+                    slack.chat.postMessage({ channel: message.channel, text: `Sorry, could you try rewording that.` })
+                        .catch(console.error);
+                }
+            }              
+        }); 
     });
 
     // *** Handle errors ***
