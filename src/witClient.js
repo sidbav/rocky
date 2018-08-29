@@ -1,6 +1,7 @@
+'use strict'; 
+
 const request = require('superagent'); 
 
-//need to change up the stuff that i import
 module.exports = (message, callback) => { 
     const token = process.env.WIT_SERVER_ACCESS_TOKEN;
     

@@ -1,6 +1,5 @@
+'use strict'; 
 module.exports = (app) => {
-    
-    'use strict'; 
 
     //loading all of the environment variables from .env file
     require('dotenv').config(); 
@@ -66,46 +65,65 @@ module.exports = (app) => {
 
     app.get('/auth/slack/callback',
         passport.authenticate('slack', { session: false }), (req, res) => {   
-            res.send('<p>sidbav_bot was successfully installed on your team.</p>');
+            res.send('<p>Rocky was successfully installed on your team.</p>');
         },
         (err, req, res, next) => {
-        res.status(500).send(`<p>sidbav_bot failed to install</p> <pre>${err}</pre>`);
+        res.status(500).send(`<p>Rocky failed to install</p> <pre>${err}</pre>`);
         }
     );  
 
     //express middleware stuff
     app.use('/slack/events', slackEvents.expressMiddleware());
 
-
     //what happens when any message is sent
     slackEvents.on('message', (message, body) => {
-    
-        console.log(message.text); 
 
-        nlp(message.text, (err, res) => { 
-            if (err) { 
-                console.log(err); 
-                return; 
-            }
+        //check message to see if it has rocky in the message, else we will not respond
+        if (message.text.toLowerCase().includes('rocky')) {
 
-            if (!message.subtype) {
-                const slack = getClientByTeamId(body.team_id);
-                if (!slack) {
-                    return console.error('No authorization found for this team. Did you install this app again after restarting?');
+            var string = ''; 
+            if (message.text.toLowerCase().includes('<@rocky>')) 
+                string = message.text.toLowerCase().replace('<@rocky>','');
+            else 
+                string = message.text.toLowerCase().replace('rocky','');  
+            
+            console.log(`The original message was: ${message.text} and the message afterwards was: ${string}`); 
+            
+            //ensure slack connection is made before interpreting the message
+            const slack = getClientByTeamId(body.team_id);
+            if (!slack) 
+                return console.error('No authorization found for this team. Did you install this app again after restarting?');
+            
+            nlp(string, (err, res) => { 
+                if (err) { 
+                    console.log(err); 
+                    return; 
                 }
 
-                if (!res.intent) { 
-                    slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand.` })
-                        .catch(console.error);
-                } else if (res.intent[0].value == 'time' && res.location) { 
-                    slack.chat.postMessage({ channel: message.channel, text: `Sorry, I do not know the time yet!` })
-                        .catch(console.error);
-                } else { 
-                    slack.chat.postMessage({ channel: message.channel, text: `Sorry, could you try rewording that.` })
-                        .catch(console.error);
-                }
-            }              
-        }); 
+                try { 
+                    //if any errors with the intents
+                    if (!res.intent || !res.intent[0] || !res.intent[0].value)
+                        throw new Error("Could not extract intent.");
+
+                    console.log(`I am using this file: ./intents/${res.intent[0].value}`); 
+                    
+                    require(`./intents/${res.intent[0].value}`)(res, (error, response)=> { 
+                        if(error) {
+                            console.log(error.message);
+                            return;
+                        }
+
+                        return slack.chat.postMessage({ channel: message.channel, text: response })
+                            .catch(console.error);                
+                    }); 
+                } catch (err) {
+                    console.log(err);
+                    console.log(res);
+                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand` })
+                            .catch(console.error);     
+                }             
+            }); 
+        }
     });
 
     // *** Handle errors ***
@@ -119,4 +137,4 @@ module.exports = (app) => {
         console.error(`An error occurred while handling a Slack event: ${error.message}`);  
         }
     });
-}     
+}    
