@@ -1,5 +1,4 @@
 'use strict'; 
-module.exports = (app) => {
 
     //loading all of the environment variables from .env file
     require('dotenv').config(); 
@@ -9,20 +8,24 @@ module.exports = (app) => {
         passport = require('passport'),
         SlackStrategy = require('@aoberoi/passport-slack').default.Strategy, //used when authentacting with passport
         nlp = require('./witClient'); 
-
+    
     //all of the tokens with error checking
     const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET; 
 
     if (!SLACK_SIGNING_SECRET)
         throw new Error('missing SLACK_SIGNING_SECRET'); 
+
     const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID; 
 
     if (!SLACK_CLIENT_ID)
         throw new Error('missing SLACK_CLIENT_ID'); 
 
     const SLACK_CLIENT_SECRET=  process.env.SLACK_CLIENT_SECRET; 
+    
     if (!SLACK_CLIENT_SECRET)
         throw new Error('missing SLACK_CLIENT_SECRET');    
+        
+module.exports = (app) => {
 
     //connecting to slack app
     const slackEvents = slackEventsApi.createEventAdapter(SLACK_SIGNING_SECRET, {
@@ -83,11 +86,9 @@ module.exports = (app) => {
 
             var string = ''; 
             if (message.text.toLowerCase().includes('<@rocky>')) 
-                string = message.text.toLowerCase().replace('<@rocky>','');
+                string = message.text.replace('<@rocky>','');
             else 
-                string = message.text.toLowerCase().replace('rocky','');  
-            
-            console.log(`The original message was: ${message.text} and the message afterwards was: ${string}`); 
+                string = message.text.replace(/rocky/gi,'');  
             
             //ensure slack connection is made before interpreting the message
             const slack = getClientByTeamId(body.team_id);
@@ -104,10 +105,9 @@ module.exports = (app) => {
                     //if any errors with the intents
                     if (!res.intent || !res.intent[0] || !res.intent[0].value)
                         throw new Error("Could not extract intent.");
-
-                    console.log(`I am using this file: ./intents/${res.intent[0].value}`); 
                     
-                    require(`./intents/${res.intent[0].value}`)(res, (error, response)=> { 
+                    const intent = require(`./intents/${res.intent[0].value}`); 
+                    intent(res, (error, response) => { 
                         if(error) {
                             console.log(error.message);
                             return;
@@ -116,7 +116,8 @@ module.exports = (app) => {
                         return slack.chat.postMessage({ channel: message.channel, text: response })
                             .catch(console.error);                
                     }); 
-                } catch (err) {
+                } 
+                catch (err) {
                     console.log(err);
                     console.log(res);
                     return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand` })
