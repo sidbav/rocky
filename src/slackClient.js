@@ -81,13 +81,16 @@ module.exports = (app) => {
     //what happens when any message is sent
     slackEvents.on('message', (message, body) => {
 
+        console.log(message.text); 
+
         //check message to see if it has rocky in the message, else we will not respond
-        if (message.text.toLowerCase().includes('rocky')) {
+        if (message.text.toLowerCase().includes('rocky')|| message.text.includes('<@UCAMDFK89>')) {
 
             var string = ''; 
-            if (message.text.toLowerCase().includes('<@rocky>')) 
-                string = message.text.replace('<@rocky>','');
-            else 
+            //remove bot user id if referred to as @rocky
+            if (message.text.includes('<@UCAMDFK89>')) 
+                string = message.text.replace(/<@UCAMDFK89>/gi,'');
+            else if (message.text.toLowerCase().includes('rocky'))
                 string = message.text.replace(/rocky/gi,'');  
             
             //ensure slack connection is made before interpreting the message
@@ -105,8 +108,15 @@ module.exports = (app) => {
                     //if any errors with the intents
                     if (!res.intent || !res.intent[0] || !res.intent[0].value)
                         throw new Error("Could not extract intent.");
-                    
-                    const intent = require(`./intents/${res.intent[0].value}`); 
+                    var intent;
+
+                    //may need to rename the folder
+                    if (res.intent[0].value === 'time-now') { 
+                        intent = require(`./intents/timeNow`); 
+                    } 
+                    else {                     
+                        intent = require(`./intents/${res.intent[0].value}`);
+                    }       
                     intent(res, (error, response) => { 
                         if(error) {
                             console.log(error.message);
@@ -120,7 +130,7 @@ module.exports = (app) => {
                 catch (err) {
                     console.log(err);
                     console.log(res);
-                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand` })
+                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand. Right now I am still working on getting the time for certain cities, but dont worry that will be fized soon!` })
                             .catch(console.error);     
                 }             
             }); 

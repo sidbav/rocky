@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@aoberoi/passport-slack": "^1.0.5",
+    "@google/maps": "^0.5.5",
     "@slack/client": "^4.4.0",
     "@slack/events-api": "^2.1.0",
     "dotenv": "^6.0.0",
