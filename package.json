@@ -1,13 +1,13 @@
 {
-  "name": "sidbav-slack-bot",
+  "name": "rocky",
   "version": "1.0.0",
-  "description": "A slackbot called sidbav",
+  "description": "A slackbot called rocky",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sidharth Baveja",
+  "author": "Sidharth Baveja <sidharthbav@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@aoberoi/passport-slack": "^1.0.5",
