@@ -24,9 +24,9 @@ module.exports.geoCode = (location, callback) => {
             if (err) { 
                 return callback(err); 
             }
-            if (res.statusCode != 200||res.body.status != "OK")
-                return callback(`Rciveied status code ${res.statusCode}/${res.body.status} instead of 200/OK`); 
+            if (res.statusCode != 200|| res.body.status != "OK")
+                return callback(`Received status code ${res.statusCode}/${res.body.status} instead of 200/OK`); 
             
-            return callback(false, res.body.results[0]); 
+            return callback(false, res.body); 
         }); 
 }

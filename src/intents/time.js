@@ -22,64 +22,47 @@ module.exports = (data, callback) => {
 
     //did not recieve the location with time intent
     if (!data.location)
-        return callback(new Error(`Missing location with the time intent`));
+        return callback(new Error(`Missing location with the time intent`)); 
 
-    var lat;
-    var long;
-    var googleData;  
-    function googleResponse(res) { 
-        googleData = res;
-        console.log(`Google Data: ${googleData}`) 
-        return; 
-    } 
-    //check to see if we need to use google geoCoding or not
-    if (!data.location[0].resolved) {
+    //geocode the results regardless if wit provides the coords or not
+    geoCode(data.location[0].value, (err, res) => {
+        if (err) {
+            return callback(err);
+        }
+        if (res.status != "OK")
+            return callback(`Recieved status ${res.status} instead of OK from Google :(`);
+        
+        const results = res.results[0]; 
 
-        console.log(`using Google geocoding`);
+        request
+            .get('http://api.timezonedb.com/v2/get-time-zone')
+            .query({
+                key: TIMEZONEDB_API_KEY,
+                format: 'json',
+                by: 'position',
+                lat: results.geometry.location.lat,
+                lng: results.geometry.location.lng
+            })
+            .end((err, res) => {
+                if (err) {
+                    return callback(err);
+                }
+                if (res.statusCode != 200) {
+                    return callback(`Recieved status ${res.statusCode} instead of 200 :(`);
+                }
 
-        geoCode(data.location[0].value, (err, res) => {
-            if (err) {
-                return callback(err);
-            }
-            //set long and lat to the search results
-            lat = res.geometry.location.lat;
-            long = res.geometry.location.lng;
-            console.log(lat +" google"); 
-            console.log(long + "google"); 
-            googleResponse(res); 
+                //separate the date from the time
+                let date = res.body.formatted.substr(0, 10); 
+                let time = res.body.formatted.slice(11);
+                console.log(time); 
+
+                let formattedTime = moment(time, 'hh:mm:ss').format('LTS');
+                console.log(`formatted time: ${formattedTime}`);
+
+                let formattedDate = moment(date, "YYYY-MM-DD").format('LL'); 
+                console.log(`formatted date: ${formattedDate}`);
+
+                return callback(false, `In ${results.formatted_address}, it is ${formattedDate} and the time is ${formattedTime}.`);
         });
-    }
-    else {
-        console.log(`Did not use google Geocoding`)
-        lat = data.location[0].resolved.values[0].coords.lat;
-        long = data.location[0].resolved.values[0].coords.long;
-    }
-
-    request
-        .get('http://api.timezonedb.com/v2/get-time-zone')
-        .query({
-            key: TIMEZONEDB_API_KEY,
-            format: 'json',
-            by: 'position',
-            lat: lat,
-            lng: long
-        })
-        .end((err, res) => {
-            if (err) {
-                return callback(err);
-            }
-            if (res.statusCode != 200 || res.body.status != "OK") {
-                return callback(`Recieved status ${res.body.status} or ${res.statusCode} instead of OK/200 :(`);
-            }
-
-            // console.log(res); 
-            //separate the date from the time
-            let time = res.body.formatted.slice(11);
-            console.log(`the time is ${time}`);
-
-            let formattedTime = moment(time, 'hh:mm:ss').format('LTS');
-            console.log(`formatted time: ${formattedTime}`);
-
-            return callback(false, `The time in ${data.location[0].value} is ${formattedTime}.`);
-        });
+    });   
 }

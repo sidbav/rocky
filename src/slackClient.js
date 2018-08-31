@@ -107,16 +107,10 @@ module.exports = (app) => {
                 try { 
                     //if any errors with the intents
                     if (!res.intent || !res.intent[0] || !res.intent[0].value)
-                        throw new Error("Could not extract intent.");
-                    var intent;
-
-                    //may need to rename the folder
-                    if (res.intent[0].value === 'time-now') { 
-                        intent = require(`./intents/timeNow`); 
-                    } 
-                    else {                     
-                        intent = require(`./intents/${res.intent[0].value}`);
-                    }       
+                        throw new Error("Could not extract intent.");                    
+                        
+                    const intent = require(`./intents/${res.intent[0].value}`); 
+                    console.log(intent);    
                     intent(res, (error, response) => { 
                         if(error) {
                             console.log(error.message);
@@ -130,7 +124,7 @@ module.exports = (app) => {
                 catch (err) {
                     console.log(err);
                     console.log(res);
-                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand. Right now I am still working on getting the time for certain cities, but dont worry that will be fized soon!` })
+                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand. Could you try rewording your message.` })
                             .catch(console.error);     
                 }             
             }); 
