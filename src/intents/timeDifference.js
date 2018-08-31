@@ -163,7 +163,7 @@ module.exports = (data, callback) => {
                                     return callback(false, `${result0.formatted_address} is *ahead* of ${result1.formatted_address} by ${Math.abs(diff)} hours. In ${result0.formatted_address}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${result1.formatted_address}, it is ${formattedDate1} and the time is ${formattedTime1}.`); 
                                 }
                                 else { 
-                                    return callback(false, `${result0.formatted_address} is *behind* of ${result1.formatted_address} by ${Math.abs(diff)} hours. In ${result0.formatted_address}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${result1.formatted_address}, it is ${formattedDate1} and the time is ${formattedTime1}.`); 
+                                    return callback(false, `${result0.formatted_address} is *behind* ${result1.formatted_address} by ${Math.abs(diff)} hours. In ${result0.formatted_address}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${result1.formatted_address}, it is ${formattedDate1} and the time is ${formattedTime1}.`); 
                                 }
                         });
                     });   
