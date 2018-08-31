@@ -4,7 +4,7 @@
 require('dotenv').config();
 
 const request = require('superagent'); 
-const geoCode = require('../googleClient'.geoCode); 
+const geoCode = require('../googleClient').geoCode; 
 
 const OPEN_WEATHER_MAP_API = process.env.OPEN_WEATHER_MAP_API
 if (!OPEN_WEATHER_MAP_API) { 
@@ -42,12 +42,14 @@ module.exports = (data, callback) => {
                 if (err)
                     return callback(err); 
                 if (res.status != 200)
-                    return callback(res.status); 
+                    return callback(res.status);
+                    
+                console.log(res.body); 
                 
-                let des = res.body.weather.description; 
+                let des = res.body.weather[0].description; 
                 let temp = res.body.main.temp; 
 
-                return callback(false, `The current weather in ${results.formatted_address} is ${des} at ${temp} degrees celsius`)
+                return callback(false, `The current weather in ${results.formatted_address} is ${des} at ${temp} degrees celsius.`)
         }); 
     }); 
     

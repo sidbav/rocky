@@ -17,9 +17,9 @@ module.exports = (data, callback) => {
     if (data.intent[0].value != 'timeDifference')
         return callback(new Error(`Expected timeDifference intent, got ${data.intent[0].value} instead`));
 
-    //did not recieve the location with time intent
+    //did not recieve the location with timeDifference intent
     if (!data.location)
-        return callback(new Error(`Missing location with the time intent`)); 
+        return callback(new Error(`Missing location with the time difference intent`)); 
 
     //only provide one location or if one location is here, and the other is an actually place (hopefully lol)
     if (data.location.length == 1 || data.location[0].value.toLowerCase() == 'here' ||data.location[1].value.toLowerCase() == 'here') { 

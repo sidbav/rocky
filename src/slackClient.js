@@ -123,8 +123,8 @@ module.exports = (app) => {
                 } 
                 catch (err) {
                     console.log(err);
-                    console.log(res);
-                    return slack.chat.postMessage({ channel: message.channel, text: `Sorry I do not understand. Could you try rewording your message.` })
+                    return slack.chat.postMessage({ channel: message.channel, text: 
+                        `Sorry I do not understand. Could you try rewording your message?` })
                             .catch(console.error);     
                 }             
             }); 
