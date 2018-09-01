@@ -6,7 +6,7 @@ require('dotenv').config();
 const request = require('superagent'); 
 const geoCode = require('../googleClient').geoCode; 
 
-const OPEN_WEATHER_MAP_API = process.env.OPEN_WEATHER_MAP_API
+const OPEN_WEATHER_MAP_API = process.env.OPEN_WEATHER_MAP_API; 
 if (!OPEN_WEATHER_MAP_API) { 
     throw new Error('Missing OPEN_WEATHER_MAP_API'); 
 }
@@ -39,17 +39,21 @@ module.exports = (data, callback) => {
                 lon: results.geometry.location.lng 
             })
             .end((err, res) => { 
-                if (err)
-                    return callback(err); 
-                if (res.status != 200)
-                    return callback(res.status);
-                    
+                if (err) {
+                    console.log(err); 
+                    return callback(false, `Sorry, I had a problem finding out the weather in ${data.location[0].value}.`); 
+                } 
+                if (res.status != 200) { 
+                    console.log(`Recieved ${res.status} instead of 200`);
+                    return callback(false, `Sorry, I had a problem finding out the weather in ${data.location[0].value}.`);
+                }
+                                    
                 console.log(res.body); 
                 
                 let des = res.body.weather[0].description; 
                 let temp = res.body.main.temp; 
 
-                return callback(false, `The current weather in ${results.formatted_address} is ${des} at ${temp} degrees celsius.`)
+                return callback(false, `The current weather in ${results.formatted_address} has ${des} and the temperature is ${temp} degrees celsius.`)
         }); 
     }); 
     

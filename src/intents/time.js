@@ -27,11 +27,14 @@ module.exports = (data, callback) => {
     //geocode the results regardless if wit provides the coords or not
     geoCode(data.location[0].value, (err, res) => {
         if (err) {
-            return callback(err);
+            console.log(err);
+            return callback(null, `Sorry I was not able to return the time for ${data.location[0].value}`); 
         }
-        if (res.status != "OK")
-            return callback(`Recieved status ${res.status} instead of OK from Google :(`);
-        
+        if (res.status != "OK") {
+            console.log(`Recieved status ${res.status} instead of OK from Google :(`);
+            return callback(null, `Sorry I was not able to return the time for ${data.location[0].value}`); 
+        }
+    
         const results = res.results[0]; 
 
         request
@@ -45,10 +48,12 @@ module.exports = (data, callback) => {
             })
             .end((err, res) => {
                 if (err) {
-                    return callback(err);
+                    console.log(err); 
+                    return callback(null, `Sorry I was not able to return the time for ${data.location[0].value}`); 
                 }
                 if (res.statusCode != 200) {
-                    return callback(`Recieved status ${res.statusCode} instead of 200 :(`);
+                    console.log(`Recieved status ${res.statusCode} instead of 200 :(`);
+                    return callback(null, `Sorry I was not able to return the time for ${data.location[0].value}`); 
                 }
 
                 //separate the date from the time

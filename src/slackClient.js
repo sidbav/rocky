@@ -87,7 +87,7 @@ module.exports = (app) => {
         if (message.text.toLowerCase().includes('rocky')|| message.text.includes('<@UCAMDFK89>')) {
 
             var string = ''; 
-            //remove bot user id if referred to as @rocky
+            //remove bot user id if rocky is referred to as @rocky
             if (message.text.includes('<@UCAMDFK89>')) 
                 string = message.text.replace(/<@UCAMDFK89>/gi,'');
             else if (message.text.toLowerCase().includes('rocky'))
@@ -109,8 +109,7 @@ module.exports = (app) => {
                     if (!res.intent || !res.intent[0] || !res.intent[0].value)
                         throw new Error("Could not extract intent.");                    
                         
-                    const intent = require(`./intents/${res.intent[0].value}`); 
-                    console.log(intent);    
+                    const intent = require(`./intents/${res.intent[0].value}`);    
                     intent(res, (error, response) => { 
                         if(error) {
                             console.log(error.message);

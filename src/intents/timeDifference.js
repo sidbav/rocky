@@ -11,6 +11,7 @@ if (!TIMEZONEDB_API_KEY)
 
 const request = require('superagent'); 
 const geoCode = require('../googleClient').geoCode; 
+const func = require('./functions/timeDifferenceFunctions'); 
 
 module.exports = (data, callback) => { 
     //ensure we get the correct intent
@@ -23,13 +24,24 @@ module.exports = (data, callback) => {
 
     //only provide one location or if one location is here, and the other is an actually place (hopefully lol)
     if (data.location.length == 1 || data.location[0].value.toLowerCase() == 'here' ||data.location[1].value.toLowerCase() == 'here') { 
+        
+        //var loc; 
+
+        if (data.location[0].value.toLowerCase() == 'here') { 
+            console.log(`changed the value of data.location[0].value`)
+            data.location[0].value = data.location[1].value; 
+        }
+        //console.log(loc); 
 
         geoCode(data.location[0].value, (err, res) => {
             if (err) {
-                return callback(err);
+                console.log(err); 
+                return callback(false, `Sorry, I had a problem finding out the time difference betweeen ${data.location[0].value} and here.`);
             }
-            if (res.status != "OK")
-                return callback(`Recieved status ${res.status} instead of OK from Google :(`);
+            if (res.status != "OK") {
+                console.log(`Recieved status ${res.status} instead of OK from Google :(`);
+                return callback(false, `Sorry, I had a problem finding out the time difference betweeen ${data.location[0].value} and here.`);
+            } 
             
             const results = res.results[0]; 
     
@@ -44,10 +56,12 @@ module.exports = (data, callback) => {
                 })
                 .end((err, res) => {
                     if (err) {
-                        return callback(err);
+                        console.log(err); 
+                        return callback(false, `Sorry, I had a problem finding out the time difference betweeen ${data.location[0].value} and here.`);
                     }
                     if (res.statusCode != 200) {
-                        return callback(`Recieved status ${res.statusCode} instead of 200 :(`);
+                        console.log(`Recieved status ${res.statusCode} instead of 200 :(`);
+                        return callback(false, `Sorry, I had a problem finding out the time difference betweeen ${data.location[0].value} and here.`);
                     }
                     //there
                     const dateThere = res.body.formatted.substr(0, 10); 
@@ -67,13 +81,15 @@ module.exports = (data, callback) => {
                     const diff = Math.round(timeHere.diff(timeThereCom, 'hours', true)*10)/10;
 
                     if (diff == 0) { 
-                        return callback(false, `There is no difference in time betweeen ${results.formatted_address} and here. Today's date here and in ${results.formatted_address} is ${date} and the time is ${time}.`); 
+                        return callback(false, func.noDiff2(results.formatted_address, date, time)); 
                     }
                     else if (diff < 0) { 
-                        return callback(false, `${results.formatted_address} is ahead of here by ${Math.abs(diff)} hours. In ${results.formatted_address}, it is ${formattedDateThere} and the time is ${formattedTimeThere}. Here the date is ${date} and the time is ${time}.`)
+                        return callback(false, func.ahead2(results.formatted_address,
+                            Math.abs(diff), formattedDateThere, formattedTimeThere, date, time));
                     }
                     else { 
-                        return callback(false, `${results.formatted_address} is behind of here by ${Math.abs(diff)} hours. In ${results.formatted_address}, it is ${formattedDateThere} and the time is ${formattedTimeThere}. Here the date is ${date} and the time is ${time}.`)
+                        return callback(false, func.behind2(results.formatted_address,
+                            Math.abs(diff), formattedDateThere, formattedTimeThere, date, time));
                     }
             });
         });   
@@ -82,11 +98,14 @@ module.exports = (data, callback) => {
     else { 
         geoCode(data.location[0].value, (err, res) => {
             if (err) {
-                return callback(err);
+                console.log(err);
+                return callback(false, func.prob(data.location[0].value, data.location[1].value));
             }
-            if (res.status != "OK")
-                return callback(`Recieved status ${res.status} instead of OK from Google :(`);
-            
+            if (res.status != "OK") {
+                console.log(`Recieved status ${res.status} instead of OK from Google :(`);
+                return callback(false, func.prob(data.location[0].value, data.location[1].value));
+            } 
+
             const result0 = res.results[0]; 
             request
                 .get('http://api.timezonedb.com/v2/get-time-zone')
@@ -99,10 +118,12 @@ module.exports = (data, callback) => {
                 })
                 .end((err, res) => {
                     if (err) {
-                        return callback(err);
+                        console.log(err);
+                        return callback(false, func.prob(data.location[0].value, data.location[1].value));
                     }
                     if (res.statusCode != 200) {
-                        return callback(`Recieved status ${res.statusCode} instead of 200 :(`);
+                        console.log(`Recieved status ${res.statusCode} instead of 200 :(`);
+                        return callback(false, func.prob(data.location[0].value, data.location[1].value));
                     }
 
                     //location 0 info
@@ -117,11 +138,13 @@ module.exports = (data, callback) => {
                     //now get the other location's stuff
                     geoCode(data.location[1].value, (error, response) => {
                         if (error) {
-                            return callback(error);
+                            console.log(error);
                         }
-                        if (response.status != "OK")
-                            return callback(`Recieved status ${response.status} instead of OK from Google :(`);
-                        
+                        if (response.status != "OK") {
+                            console.log(`Recieved status ${response.status} instead of OK from Google :(`);
+                            return callback(false, func.prob(data.location[0].value, data.location[1].value));
+                        }
+
                         const result1 = response.results[0]; 
                         request
                             .get('http://api.timezonedb.com/v2/get-time-zone')
@@ -134,10 +157,12 @@ module.exports = (data, callback) => {
                             })
                             .end((error, response) => {
                                 if (error) {
-                                    return callback(error);
+                                    console.log(error);
+                                    return callback(false, func.prob(data.location[0].value, data.location[1].value));
                                 }
                                 if (response.statusCode != 200) {
-                                    return callback(`Recieved status ${response.statusCode} instead of 200 :(`);
+                                    console.log(`Recieved status ${response.statusCode} instead of 200 :(`);
+                                    return callback(false, func.prob(data.location[0].value, data.location[1].value));
                                 }
 
                                 //location 1 info
@@ -149,21 +174,20 @@ module.exports = (data, callback) => {
                                 const formattedDate1= `${moment(date1, "YYYY-MM-DD").format('dddd')}, ${moment(date1, "YYYY-MM-DD").format('LL')}`; 
                                 console.log(`formatted date1: ${formattedDate1}`);
                     
-
                                 //return negative if time0Com is behind, and positive if time0Com is ahead
                                 const diff = Math.round(time0Com.diff(time1Com, 'hours', true) * 10)/10;
 
                                 if (diff == 0) { 
-                                    return callback(false, `There is no difference in time betweeen ${result0.formatted_address}
-                                    and ${result1.formatted_address}.Today's date ${result0.formatted_address} and 
-                                    ${result1.formatted_address}is ${formatteDate1} and the time is ${formattedDate0}.`); 
+                                    return callback(false, func.noDiff(result0.formatted_address, result1.formatted_address,
+                                        formattedDate1, formattedTime0)); 
                                 }
-                                //do not change this it is correct 
                                 else if (diff > 0) { 
-                                    return callback(false, `${result0.formatted_address} is *ahead* of ${result1.formatted_address} by ${Math.abs(diff)} hours. In ${result0.formatted_address}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${result1.formatted_address}, it is ${formattedDate1} and the time is ${formattedTime1}.`); 
+                                    return callback(false, func.ahead(result0.formatted_address, result1.formatted_address,
+                                                            Math.abs(diff), formattedDate0, formattedTime0, formattedDate1, formattedTime1));  
                                 }
                                 else { 
-                                    return callback(false, `${result0.formatted_address} is *behind* ${result1.formatted_address} by ${Math.abs(diff)} hours. In ${result0.formatted_address}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${result1.formatted_address}, it is ${formattedDate1} and the time is ${formattedTime1}.`); 
+                                    return callback(false, func.behind(result0.formatted_address, result1.formatted_address,
+                                        Math.abs(diff), formattedDate0, formattedTime0, formattedDate1, formattedTime1)); 
                                 }
                         });
                     });   

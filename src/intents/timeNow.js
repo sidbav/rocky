@@ -8,7 +8,7 @@ module.exports = (data, callback) => {
 
     //ensure we get the correct intent
     if (data.intent[0].value != 'timeNow')
-        return callback(new Error(`Expected time-now/timeNow intent, got ${data.intent[0].value} instead`));
+        return callback(new Error(`Expected timeNow intent, got ${data.intent[0].value} instead`));
 
     const date = `${moment().format('dddd')}, ${moment().format('LL')}`; 
     const time = moment().format('LTS');

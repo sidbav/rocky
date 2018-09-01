@@ -10,11 +10,11 @@ module.exports = (data, callback) => {
     var message = ''; 
 
     const hellos = ['Greetings! ', 'Howdy! ', 'Hi! ']; 
-    const hru = ['I am great. ', 'I am tired. ', 'I am stonecold. ', 'I am doing well. ', 'I am good. ', 'I am cold as a rock. ', 'I am rock solid. ']; 
-
+    const hrur = ['I am great. ', 'I am tired. ', '', 'I am doing well. ', 'I am good. ', 'I am cold as a rock. ', 'I am rock solid. ']; 
+    const hru = ['How are you?', 'How are you doing?', 'How is it going?', 'What up?', 'What\'s up?', 'How ya doing?']; 
     message += hellos[Math.floor(Math.random()*hellos.length)]; 
-    message += hru[Math.floor(Math.random()* hru.length)]; 
-    message += 'How are you?'; 
+    message += hrur[Math.floor(Math.random()* hrur.length)]; 
+    message += hru[Math.floor(Math.random() * hru.length)]; 
 
     callback(false, message); 
 

@@ -2,8 +2,6 @@
 //loading all of the environment variables from .env file
 require('dotenv').config();
 
-//importing google maps library
-const maps = require('@google/maps');
 const request = require('superagent');
 
 //importing API Key
