@@ -12,6 +12,8 @@ module.exports = (data, callback) => {
 
     const date = `${moment().format('dddd')}, ${moment().format('LL')}`; 
     const time = moment().format('LTS');
+
     const message = `Today's date is ${date} and the time is ${time}.`; 
+    
     return callback(false, message); 
 } 

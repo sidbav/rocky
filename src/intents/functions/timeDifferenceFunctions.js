@@ -1,3 +1,4 @@
+
 module.exports.ahead = (location0, location1, diff, formattedDate0, formattedTime0, formattedDate1, formattedTime1) => { 
     return `${location0} is *ahead* of ${location1} by ${diff} hours. In ${location0}, it is ${formattedDate0} and the time is ${formattedTime0}. In ${location1}, it is ${formattedDate1} and the time is ${formattedTime1}.`; 
 }

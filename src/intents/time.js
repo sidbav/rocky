@@ -59,7 +59,6 @@ module.exports = (data, callback) => {
                 //separate the date from the time
                 let date = res.body.formatted.substr(0, 10); 
                 let time = res.body.formatted.slice(11);
-                console.log(time); 
 
                 let formattedTime = moment(time, 'hh:mm:ss').format('LTS');
                 console.log(`formatted time: ${formattedTime}`);

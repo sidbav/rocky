@@ -141,4 +141,5 @@ module.exports = (app) => {
         console.error(`An error occurred while handling a Slack event: ${error.message}`);  
         }
     });
-}    
+}   
+ 
