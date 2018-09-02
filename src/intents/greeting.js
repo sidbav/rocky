@@ -15,7 +15,7 @@ module.exports = (data, callback) => {
     
     const hru = ['How are you?', 'How are you doing?', 'How is it going?', 'What up?', 'What\'s up?', 'How ya doing?']; 
     
-    message += hellos[Math.floor(Math.random()*hellos.length)]; 
+    message += hellos[Math.floor(Math.random() *hellos.length)]; 
     message += hrur[Math.floor(Math.random()* hrur.length)]; 
     message += hru[Math.floor(Math.random() * hru.length)]; 
 

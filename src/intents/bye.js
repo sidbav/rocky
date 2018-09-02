@@ -7,7 +7,7 @@ module.exports = (data, callback) => {
     
     const byes = ['See you later aligator!', 'Bye', 'talk to you tommorrow', 'Goodbye', 'later', 'Bye-bye']; 
 
-    const message = byes[Math.floor(Math.random * byes.length)]; 
+    const message = byes[Math.floor(Math.random() * byes.length)]; 
 
     return callback(false, message); 
 
