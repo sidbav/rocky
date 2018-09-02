@@ -8,7 +8,7 @@ Rocky is a slack mircoservice AKA a slack bot! Currently Rocky can:
 - say goodbye ('Bye Rocky!')
 
 Rocky was created using:  
-- [Node.js](https://github.com/nodejs/node)
+- [Node.js](https://nodejs.org)
 - [Slack Events API](https://api.slack.com/events-api)
 - [Wit.ai](https://wit.ai/)
 - [TimeZoneDB](https://timezonedb.com/)
