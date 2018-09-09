@@ -9,16 +9,19 @@ Rocky is a slack mircoservice AKA a slack bot! Currently Rocky can:
 
 Rocky was created using:  
 - [Node.js](https://nodejs.org)
+- [Ngrok](https://ngrok.com/)
 - [Slack Events API](https://api.slack.com/events-api)
 - [Wit.ai](https://wit.ai/)
 - [TimeZoneDB](https://timezonedb.com/)
 - [Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/start)
 - [OpenWeatherMap API](https://openweathermap.org/api)
+- [David Katz's Joke Api](https://github.com/15Dkatz/official_joke_api)
 
 
 ### Future features
 
 - Return the price of a given stock
-- Jokes
+- ~~Jokes~~
+- Ability to respond to messages after they are editted (if possible)
 - Add a working example in the readme soon :)
 - Instructions on how to run on your own device as well
