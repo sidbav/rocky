@@ -21,7 +21,6 @@ Rocky was created using:
 ### Future features
 
 - Return the price of a given stock
-- ~~Jokes~~
 - Ability to respond to messages after they are editted (if possible)
 - Add a working example in the readme soon :)
 - Instructions on how to run on your own device as well

@@ -13,7 +13,7 @@ module.exports = (message, callback) => {
         .get('https://api.wit.ai/message')
         .set('Authorization', 'Bearer ' + WIT_SERVER_ACCESS_TOKEN)
         .query({
-            v: '20180830'
+            v: '20180908'
         })
         .query({
             q: message
