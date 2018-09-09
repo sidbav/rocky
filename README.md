@@ -15,7 +15,7 @@ Rocky was created using:
 - [TimeZoneDB](https://timezonedb.com/)
 - [Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/start)
 - [OpenWeatherMap API](https://openweathermap.org/api)
-- [David Katz's Joke Api](https://github.com/15Dkatz/official_joke_api)
+- [David Katz's Joke API](https://github.com/15Dkatz/official_joke_api)
 
 
 ### Future features
