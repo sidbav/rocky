@@ -1,6 +1,6 @@
 {
   "name": "rocky",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "A slackbot called rocky",
   "main": "index.js",
   "scripts": {
