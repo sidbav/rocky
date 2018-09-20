@@ -17,7 +17,7 @@ Rocky was created using:
 - [OpenWeatherMap API](https://openweathermap.org/api)
 - [David Katz's Joke API](https://github.com/15Dkatz/official_joke_api)
 
-If you would like to experience Rocky for yourself, join my [Slack Channel](https://sidharthbav.slack.com/join/shared_invite/enQtNDMxNDE0NzQ1MDU3LTM4ZWFiMDJmN2Q1YjUyOGRhYTliMGQzMTViNTg0YjM5NDI4N2M2NmUwMzhkODUzMTAzMTczYjFhZDliNzE4OGE)!
+If you would like to experience Rocky for yourself, join my [Slack Channel](https://sidharthbav.slack.com/join/shared_invite/enQtNDMxNDE0NzQ1MDU3LTM4ZWFiMDJmN2Q1YjUyOGRhYTliMGQzMTViNTg0YjM5NDI4N2M2NmUwMzhkODUzMTAzMTczYjFhZDliNzE4OGE)! Then just follow the steps in this [link](https://sidbav-rocky.herokuapp.com/). 
 
 ### Future features
 
